@@ -26,6 +26,7 @@ using namespace std;
 
 // algorytm Kruskala
 
+// !30.12 stop, checkField to be checked why stops execution
 // generate maze
 // draw maze
 // print maze
@@ -678,8 +679,10 @@ void placePlayer()
 void getDirection()
 {
     int key;
+    cout << "Where to? ";
     key = getch();
 
+    cout << key;
     switch (key)
     {
     case 119:
@@ -703,6 +706,7 @@ void getDirection()
 
 void makeMove(int currentPosition)
 {
+    cout << "Launch move";
     system("cls");
     mazeFields.maze.at(lastPosition) = " ";
     mazeFields.maze.at(currentPosition) = "^";
@@ -714,6 +718,7 @@ void makeMove(int currentPosition)
 
 void checkField(int fieldNum)
 {
+    cout << "Launch";
     bool canMove = false;
 
     for (int check = 0; check < mazeFields.moveMap.size(); check++)
@@ -741,8 +746,6 @@ void checkField(int fieldNum)
         getDirection();
     }
 
-    // cout << "Can move: " << canMove << " ";
-    // return canMove;
 };
 
 void playerMove()
