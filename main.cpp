@@ -124,6 +124,7 @@ struct mazeData
         142,
         143,
         165,
+        185,
         187,
         209,
         205,
@@ -461,8 +462,11 @@ vector<int> nextEmptyCells;
 int activePath = 0;
 int activeDirection = 0;
 int activeCell = 0;
+int key = 0;
 int currentPosition = 0;
 int lastPosition = 0;
+bool canMove = false;
+
 
 // !iter >= 44 && iter < 264 range for # sign
 vector<int> randCellNumberVector(int iterations)
@@ -672,24 +676,24 @@ void placePlayer()
 // key: 'd' kod: 100
 
 // top iter+22
-// down iter-22
+// down iter-22s
 // left iter-1
 // right iter+1
 
 void getDirection()
 {
     int key;
-    cout << "Where to? ";
+    cout << "getDirection";
     key = getch();
 
-    cout << key;
+    cout << key << " ";
     switch (key)
     {
     case 119:
-        currentPosition = currentPosition + 22;
+        currentPosition = currentPosition - 22;
         break;
     case 115:
-        currentPosition = currentPosition - 22;
+        currentPosition = currentPosition + 22;
         break;
     case 97:
         currentPosition = currentPosition - 1;
@@ -704,9 +708,9 @@ void getDirection()
     }
 };
 
-void makeMove(int currentPosition)
+void makeMove()
 {
-    cout << "Launch move";
+    cout << "makeMove";
     system("cls");
     mazeFields.maze.at(lastPosition) = " ";
     mazeFields.maze.at(currentPosition) = "^";
@@ -715,47 +719,57 @@ void makeMove(int currentPosition)
 };
 
 
-
-void checkField(int fieldNum)
+void checkField()
 {
-    cout << "Launch";
-    bool canMove = false;
+    cout << "checkField";
 
     for (int check = 0; check < mazeFields.moveMap.size(); check++)
     {
 
-        if (fieldNum == mazeFields.moveMap[check] && mazeFields.maze.at(fieldNum) != "#" && mazeFields.maze.at(fieldNum) != "$")
+        if (currentPosition == mazeFields.moveMap[check] && mazeFields.maze.at(currentPosition) != "#" && mazeFields.maze.at(currentPosition) != "$" && mazeFields.maze.at(currentPosition) != "|")
         {
-            // cout << mazeFields.maze.at(fieldNum) << " ";
-            activeCell = fieldNum;
+            // cout << mazeFields.maze.at(currentPosition) << "+";
+            activeCell = currentPosition;
             canMove = true;
             break;
         }
         else
         {
+            // cout << mazeFields.maze.at(currentPosition) << "-";
+                    
+        switch (key)
+            {
+            case 119:
+                currentPosition = currentPosition + 22;
+                break;
+            case 115:
+                currentPosition = currentPosition - 22;
+                break;
+            case 97:
+                currentPosition = currentPosition + 1;
+                break;
+            case 100:
+                currentPosition = currentPosition - 1;
+                break;
+            }
             canMove = false;
         };
     };
 
     if (canMove == true)
-    {
-        makeMove(currentPosition);
-    }
-    else
-    {
-        getDirection();
-    }
-
+        {
+            makeMove();
+        }
 };
+
 
 void playerMove()
 {
-    do
+    while (mazeFields.maze.at(activeCell) != "@")
     {
         getDirection();
-        checkField(currentPosition);
-
-    } while (mazeFields.maze.at(activeCell) == "@");
+        checkField();
+    }
 }
 
 void mazeBuilder()
