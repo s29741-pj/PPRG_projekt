@@ -11,37 +11,11 @@
 #include <conio.h>
 using namespace std;
 
-// Program wypisuje na ekran labirynt o rozmiarze 10x20, który składa się z następujących elementów:
-// • # - ściana, nie można na nią wejść,
-// • ‘ ‘ – spacja - korytarz, można po nim chodzić,
-// • $ - punkt startowy,
-// • @ - punkt docelowy.
-// (Wygląd labiryntu jest dowolny, ważne, żeby znalazły się w nim powyższe elementy).
-// Program ma pozwolić użytkownikowi na poruszanie się graczem (oznaczonym w dowolny sposób) przy pomocy klawiszy:
-
-// • w - krok w górę.
-// • s - krok w dół,
-// • a - krok w lewo,
-// • d - krok w prawo,
-
-// algorytm Kruskala
-
-// !30.12 stop, checkField to be checked why stops execution
-// generate maze
-// draw maze
-// print maze
-// * move
-// get direction
-// check if move is possible
-// make move/refresh console/print with changes
-// get direction
-// end when ^ reaches @
-// * end, congrats
-
 struct mazeData
 {
+    // stores whole grid
     vector<string> maze;
-
+    // vectors with separate paths to exit point
     vector<int> path_one{
         24,
         46,
@@ -235,6 +209,7 @@ struct mazeData
         86,
     };
 
+    // stores numbers of fiedls on which player can move
     vector<int> moveMap{
         45,
         46,
@@ -446,7 +421,6 @@ struct mazeData
             if (iter % 22 == 0)
             {
                 cout << endl;
-                // cout << maze[iter];
             }
             cout << maze[iter];
         }
@@ -467,7 +441,7 @@ int currentPosition = 0;
 int lastPosition = 0;
 bool canMove = false;
 
-// !iter >= 44 && iter < 264 range for # sign
+// generate random numbers vector in given size
 vector<int> randCellNumberVector(int iterations)
 {
     sleep(1);
@@ -486,7 +460,7 @@ vector<int> randCellNumberVector(int iterations)
 
     return nextEmptyCells;
 }
-
+// return single random number
 int randomNumber(int range)
 {
     srand((unsigned)time(NULL));
@@ -494,13 +468,14 @@ int randomNumber(int range)
     return random;
 }
 
+// generate fake corridors in manner approx. to of Kruskal algorithm
 void gapsGen(int iterations)
 {
     bool sideSwitch = true;
 
     for (int iter = 0; iter < iterations; iter++)
     {
-        nextEmptyCells = randCellNumberVector(30);
+        nextEmptyCells = randCellNumberVector(15);
 
         for (int iter = 0; iter < nextEmptyCells.size(); iter++)
         {
@@ -508,11 +483,10 @@ void gapsGen(int iterations)
             switch (sideSwitch)
             {
             case 1:
-                if (nextEmptyCells[iter] + 2 < mazeFields.maze.size())
+                if (nextEmptyCells[iter] + 2 < mazeFields.maze.size() && mazeFields.maze.at(nextEmptyCells[iter]) != "|")
                 {
                     if (mazeFields.maze.at(nextEmptyCells[iter] + 2) == " ")
                     {
-                        // cout << maze.at(nextEmptyCells[iter]+2) << " + ";
                         mazeFields.maze.at(nextEmptyCells[iter] + 1) = " ";
                     }
                 }
@@ -520,14 +494,13 @@ void gapsGen(int iterations)
                 {
                     if (mazeFields.maze.at(nextEmptyCells[iter] - 44) == " ")
                     {
-                        // cout << maze.at(nextEmptyCells[iter]+2) << " + ";
                         mazeFields.maze.at(nextEmptyCells[iter] - 22) = " ";
                     }
                 }
                 break;
 
             case 0:
-                if (nextEmptyCells[iter] - 2 > 0)
+                if (nextEmptyCells[iter] - 2 > 0 && mazeFields.maze.at(nextEmptyCells[iter]) != "|")
                 {
                     if (mazeFields.maze.at(nextEmptyCells[iter] - 2) == " ")
                     {
@@ -539,7 +512,6 @@ void gapsGen(int iterations)
                 {
                     if (mazeFields.maze.at(nextEmptyCells[iter] + 44) == " ")
                     {
-                        // cout << maze.at(nextEmptyCells[iter]+2) << " + ";
                         mazeFields.maze.at(nextEmptyCells[iter] + 22) = " ";
                     }
                 }
@@ -549,17 +521,15 @@ void gapsGen(int iterations)
             sideSwitch = !sideSwitch;
         }
     }
-
-    // mazeFields.printMaze(mazeFields.maze);
 }
-
+// initializes maze with initial empty fields used after by gapsGen()
 void mazeInit()
 {
-    vector<int> initialEmptyCells = randCellNumberVector(10);
+    mazeFields.maze.clear();
+    vector<int> initialEmptyCells = randCellNumberVector(15);
 
-    // !iter >= 44 && iter < 264 range for # sign
-
-    //* initialize matrix
+    // initialize matrix
+    // iter >= 44 && iter < 264 range for # sign
     for (int iter = 0; iter < 310; iter++)
     {
         if (iter < 22)
@@ -574,22 +544,17 @@ void mazeInit()
             mazeFields.maze.push_back("-");
     }
 
-    // mazeFields.printMaze(mazeFields.maze);
-
     for (int iter = 44; iter < 244; iter += 22)
         mazeFields.maze.at(iter) = "|";
 
     for (int iter = 65; iter < 265; iter += 22)
         mazeFields.maze.at(iter) = "|";
 
-    // mazeFields.printMaze(mazeFields.maze);
-
     for (int iter = 0; iter < initialEmptyCells.size(); iter++)
-        mazeFields.maze.at(initialEmptyCells[iter]) = " ";
-
-    // mazeFields.printMaze(mazeFields.maze);
+        if (mazeFields.maze.at(initialEmptyCells[iter]) != "|")
+            mazeFields.maze.at(initialEmptyCells[iter]) = " ";
 }
-
+// draws path to exit point in maze build by mazeInit() and transformed by gapsGen()
 void pathDrawer()
 {
     activePath = randomNumber(3);
@@ -605,7 +570,6 @@ void pathDrawer()
             else
                 mazeFields.maze.at(mazeFields.path_one[iter]) = " ";
         }
-        // mazeFields.printMaze(mazeFields.maze);
     };
 
     if (activePath == 1)
@@ -619,7 +583,6 @@ void pathDrawer()
             else
                 mazeFields.maze.at(mazeFields.path_two[iter]) = " ";
         }
-        // mazeFields.printMaze(mazeFields.maze);
     };
 
     if (activePath == 2)
@@ -633,10 +596,9 @@ void pathDrawer()
             else
                 mazeFields.maze.at(mazeFields.path_three[iter]) = " ";
         }
-        // mazeFields.printMaze(mazeFields.maze);
     };
 }
-
+// places symbols of player in maze in dependency of path shuffled by pathDrawer()
 void placePlayer()
 {
     if (activePath == 0)
@@ -659,31 +621,18 @@ void placePlayer()
         lastPosition = mazeFields.path_three[1];
         currentPosition = mazeFields.path_three[1];
     }
-
-    mazeFields.printMaze(mazeFields.maze);
 };
 
-// void insideField() {
-//     for (int check = 0; check < mazeFields.moveMap.size(); check++){
-//         cout << mazeFields.maze.at(mazeFields.moveMap[check]);
-//     }
-// };
-
-// key: 'w' kod: 119
-// key: 's' kod: 115
-// key: 'a' kod: 97
-// key: 'd' kod: 100
-
-// top iter+22
-// down iter-22s
-// left iter-1
-// right iter+1
+// getDirection() player movment conversion schema
+// key: 'w' code: 119 - top iter+22
+// key: 's' code: 115 - down iter-22
+// key: 'a' code: 97 - left iter-1
+// key: 'd' code: 100 - right iter+1
 
 void getDirection()
 {
-    // int key;
-    // cout << " getDirection ";
-    // cout << " " << key;
+    system("cls");
+    mazeFields.printMaze(mazeFields.maze);
     key = getch();
 
     switch (key)
@@ -706,35 +655,35 @@ void getDirection()
         break;
     }
 };
-
+// prints changes of player position
 void makeMove()
 {
-    // cout << "makeMove";
     system("cls");
     mazeFields.maze.at(lastPosition) = " ";
     mazeFields.maze.at(currentPosition) = "^";
     mazeFields.printMaze(mazeFields.maze);
     lastPosition = currentPosition;
 };
-
+// checks if player move is possible, if not player has to provide direction again
 void checkField()
 {
-    // cout << "checkField";
-
     for (int check = 0; check < mazeFields.moveMap.size(); check++)
     {
 
-        if (currentPosition == mazeFields.moveMap[check] && mazeFields.maze.at(currentPosition) != "#" && mazeFields.maze.at(currentPosition) != "$" && mazeFields.maze.at(currentPosition) != "|")
+        if (currentPosition == mazeFields.moveMap[check] && mazeFields.maze.at(currentPosition) == "@")
         {
-            // cout << mazeFields.maze.at(currentPosition) << "+";
+            cout << "Congratulations you've reached to the exit point!" << endl
+                 << endl;
             activeCell = currentPosition;
+            break;
+        }
+        else if (currentPosition == mazeFields.moveMap[check] && mazeFields.maze.at(currentPosition) != "#" && mazeFields.maze.at(currentPosition) != "$" && mazeFields.maze.at(currentPosition) != "|")
+        {
             canMove = true;
             break;
         }
         else
         {
-            // cout << mazeFields.maze.at(currentPosition) << "-";
-            // cout << "key: " << key;
             canMove = false;
         };
     };
@@ -762,28 +711,68 @@ void checkField()
         }
     }
 };
-
-void playerMove()
-{
-    while (mazeFields.maze.at(activeCell) != "@")
-    {
-        getDirection();
-        checkField();
-    }
-}
-
+// control function of maze generation process
 void mazeBuilder()
 {
     mazeInit();
-    gapsGen(1);
+    gapsGen(2);
     pathDrawer();
     placePlayer();
+}
+// control function of whole game loop
+void game()
+{
+    bool play = true;
+    bool firstPlay = true;
+    string input;
+
+    while (play)
+    {
+
+        if (firstPlay == true)
+        {
+            cout << "  _____ _            __   __               " << endl;
+            cout << " |_   _| |__   ___  |  \\ /  |  __ _ _______  " << endl;
+            cout << "   | | | '_ \\ / _ \\ | |\\ /| | / _` |_  / _ \\ " << endl;
+            cout << "   | | | | | |  __/ | |   | |  (_| |/ /  __/ " << endl;
+            cout << "   |_| |_| |_|\\___| |_|   |_| \\__,_/___\\___| " << endl;
+            cout << endl
+                 << endl
+                 << "Welcome to The Maze!" << endl
+                 << endl;
+            cout << "Your goal is to reach point marked as '@'\nStarting point is marked as '$'\nPlayer is marked as '^'" << endl
+                 << endl;
+            cout << "Movement:\n'w' - top\n's' - bottom\n'a' - left\n'd' - right" << endl;
+            cout << "Would you like to play?\n(y/n) and press Enter" << endl;
+        }
+        else
+        {
+            cout << "Would you like to play again?\n(y/n) and press Enter" << endl;
+        }
+
+        cin >> input;
+        if (input == "y" || input == "Y")
+        {
+            mazeBuilder();
+            mazeFields.maze.at(activeCell) = " ";
+            while (mazeFields.maze.at(activeCell) != "@")
+            {
+                getDirection();
+                checkField();
+                firstPlay = false;
+            }
+        }
+        else
+        {
+            play = false;
+            cout << endl
+                 << "Bye!";
+        }
+    }
 }
 
 int main()
 {
-    mazeBuilder();
-    playerMove();
-
+    game();
     return 0;
 }
