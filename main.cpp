@@ -462,11 +462,10 @@ vector<int> nextEmptyCells;
 int activePath = 0;
 int activeDirection = 0;
 int activeCell = 0;
-int key = 0;
+int key;
 int currentPosition = 0;
 int lastPosition = 0;
 bool canMove = false;
-
 
 // !iter >= 44 && iter < 264 range for # sign
 vector<int> randCellNumberVector(int iterations)
@@ -682,11 +681,11 @@ void placePlayer()
 
 void getDirection()
 {
-    int key;
-    cout << "getDirection";
+    // int key;
+    // cout << " getDirection ";
+    // cout << " " << key;
     key = getch();
 
-    cout << key << " ";
     switch (key)
     {
     case 119:
@@ -710,7 +709,7 @@ void getDirection()
 
 void makeMove()
 {
-    cout << "makeMove";
+    // cout << "makeMove";
     system("cls");
     mazeFields.maze.at(lastPosition) = " ";
     mazeFields.maze.at(currentPosition) = "^";
@@ -718,10 +717,9 @@ void makeMove()
     lastPosition = currentPosition;
 };
 
-
 void checkField()
 {
-    cout << "checkField";
+    // cout << "checkField";
 
     for (int check = 0; check < mazeFields.moveMap.size(); check++)
     {
@@ -736,32 +734,34 @@ void checkField()
         else
         {
             // cout << mazeFields.maze.at(currentPosition) << "-";
-                    
-        switch (key)
-            {
-            case 119:
-                currentPosition = currentPosition + 22;
-                break;
-            case 115:
-                currentPosition = currentPosition - 22;
-                break;
-            case 97:
-                currentPosition = currentPosition + 1;
-                break;
-            case 100:
-                currentPosition = currentPosition - 1;
-                break;
-            }
+            // cout << "key: " << key;
             canMove = false;
         };
     };
 
     if (canMove == true)
+    {
+        makeMove();
+    }
+    else
+    {
+        switch (key)
         {
-            makeMove();
+        case 119:
+            currentPosition = currentPosition + 22;
+            break;
+        case 115:
+            currentPosition = currentPosition - 22;
+            break;
+        case 97:
+            currentPosition = currentPosition + 1;
+            break;
+        case 100:
+            currentPosition = currentPosition - 1;
+            break;
         }
+    }
 };
-
 
 void playerMove()
 {
