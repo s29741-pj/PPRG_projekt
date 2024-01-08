@@ -753,6 +753,7 @@ void game()
         cin >> input;
         if (input == "y" || input == "Y")
         {
+            sleep(1);
             mazeBuilder();
             mazeFields.maze.at(activeCell) = " ";
             while (mazeFields.maze.at(activeCell) != "@")
