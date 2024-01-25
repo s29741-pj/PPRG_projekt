@@ -9,10 +9,12 @@
 #include <iomanip>
 #include <ios>
 #include <conio.h>
+#include <future>
 using namespace std;
 
 struct mazeData
 {
+
     // stores whole grid
     vector<string> maze;
     // vectors with separate paths to exit point
@@ -416,13 +418,13 @@ struct mazeData
     void printMaze(vector<string> maze)
     {
         cout << endl;
-        for (int iter = 0; iter < maze.size(); iter++)
+        for (int i = 0; i < maze.size(); i++)
         {
-            if (iter % 22 == 0)
+            if (i % 22 == 0)
             {
                 cout << endl;
             }
-            cout << maze[iter];
+            cout << maze[i];
         }
         cout << endl
              << endl;
@@ -470,49 +472,49 @@ int randomNumber(int range)
 
 // generate fake corridors in manner approx. to of Kruskal algorithm
 void gapsGen(int iterations)
-{
+{    
     bool sideSwitch = true;
 
-    for (int iter = 0; iter < iterations; iter++)
+    for (int i = 0; i < iterations; i++)
     {
         nextEmptyCells = randCellNumberVector(15);
 
-        for (int iter = 0; iter < nextEmptyCells.size(); iter++)
+        for (int i = 0; i < nextEmptyCells.size(); i++)
         {
             // cout << " switch: " << sideSwitch;
             switch (sideSwitch)
             {
             case 1:
-                if (nextEmptyCells[iter] + 2 < mazeFields.maze.size() && mazeFields.maze.at(nextEmptyCells[iter]) != "|")
+                if (nextEmptyCells[i] + 2 < mazeFields.maze.size() && mazeFields.maze.at(nextEmptyCells[i]) != "|")
                 {
-                    if (mazeFields.maze.at(nextEmptyCells[iter] + 2) == " ")
+                    if (mazeFields.maze.at(nextEmptyCells[i] + 2) == " ")
                     {
-                        mazeFields.maze.at(nextEmptyCells[iter] + 1) = " ";
+                        mazeFields.maze.at(nextEmptyCells[i] + 1) = " ";
                     }
                 }
-                if (nextEmptyCells[iter] - 20 > 0)
+                if (nextEmptyCells[i] - 20 > 0)
                 {
-                    if (mazeFields.maze.at(nextEmptyCells[iter] - 44) == " ")
+                    if (mazeFields.maze.at(nextEmptyCells[i] - 44) == " ")
                     {
-                        mazeFields.maze.at(nextEmptyCells[iter] - 22) = " ";
+                        mazeFields.maze.at(nextEmptyCells[i] - 22) = " ";
                     }
                 }
                 break;
 
             case 0:
-                if (nextEmptyCells[iter] - 2 > 0 && mazeFields.maze.at(nextEmptyCells[iter]) != "|")
+                if (nextEmptyCells[i] - 2 > 0 && mazeFields.maze.at(nextEmptyCells[i]) != "|")
                 {
-                    if (mazeFields.maze.at(nextEmptyCells[iter] - 2) == " ")
+                    if (mazeFields.maze.at(nextEmptyCells[i] - 2) == " ")
                     {
-                        mazeFields.maze.at(nextEmptyCells[iter] - 1) = " ";
+                        mazeFields.maze.at(nextEmptyCells[i] - 1) = " ";
                     }
                 }
 
-                if (nextEmptyCells[iter] + 20 < mazeFields.maze.size())
+                if (nextEmptyCells[i] + 20 < mazeFields.maze.size())
                 {
-                    if (mazeFields.maze.at(nextEmptyCells[iter] + 44) == " ")
+                    if (mazeFields.maze.at(nextEmptyCells[i] + 44) == " ")
                     {
-                        mazeFields.maze.at(nextEmptyCells[iter] + 22) = " ";
+                        mazeFields.maze.at(nextEmptyCells[i] + 22) = " ";
                     }
                 }
                 break;
@@ -530,71 +532,72 @@ void mazeInit()
 
     // initialize matrix
     // iter >= 44 && iter < 264 range for # sign
-    for (int iter = 0; iter < 310; iter++)
+    for (int i = 0; i < 310; i++)
     {
-        if (iter < 22)
+        if (i < 22)
             mazeFields.maze.push_back("-");
-        if (iter >= 22 && iter < 44)
+        if (i >= 22 && i < 44)
             mazeFields.maze.push_back(" ");
-        if (iter >= 44 && iter < 264)
+        if (i >= 44 && i < 264)
             mazeFields.maze.push_back("#");
-        if (iter >= 266 && iter < 288)
+        if (i >= 266 && i < 288)
             mazeFields.maze.push_back(" ");
-        if (iter >= 288)
+        if (i >= 288)
             mazeFields.maze.push_back("-");
     }
 
-    for (int iter = 44; iter < 244; iter += 22)
-        mazeFields.maze.at(iter) = "|";
+    for (int i = 44; i < 244; i += 22)
+        mazeFields.maze.at(i) = "|";
 
-    for (int iter = 65; iter < 265; iter += 22)
-        mazeFields.maze.at(iter) = "|";
+    for (int i = 65; i < 265; i += 22)
+        mazeFields.maze.at(i) = "|";
 
-    for (int iter = 0; iter < initialEmptyCells.size(); iter++)
-        if (mazeFields.maze.at(initialEmptyCells[iter]) != "|")
-            mazeFields.maze.at(initialEmptyCells[iter]) = " ";
+    for (int i = 0; i < initialEmptyCells.size(); i++)
+        if (mazeFields.maze.at(initialEmptyCells[i]) != "|")
+            mazeFields.maze.at(initialEmptyCells[i]) = " ";
 }
 // draws path to exit point in maze build by mazeInit() and transformed by gapsGen()
 void pathDrawer()
-{
+{    
+    sleep(1);
     activePath = randomNumber(3);
 
     if (activePath == 0)
     {
-        for (int iter = 0; iter < mazeFields.path_one.size(); iter++)
+        for (int i = 0; i < mazeFields.path_one.size(); i++)
         {
-            if (iter == 0)
-                mazeFields.maze.at(mazeFields.path_one[iter]) = "$";
-            else if (iter == mazeFields.path_one.size() - 1)
-                mazeFields.maze.at(mazeFields.path_one[iter]) = "@";
+            if (i == 0)
+                mazeFields.maze.at(mazeFields.path_one[i]) = "$";
+            else if (i == mazeFields.path_one.size() - 1)
+                mazeFields.maze.at(mazeFields.path_one[i]) = "@";
             else
-                mazeFields.maze.at(mazeFields.path_one[iter]) = " ";
+                mazeFields.maze.at(mazeFields.path_one[i]) = " ";
         }
     };
 
     if (activePath == 1)
     {
-        for (int iter = 0; iter < mazeFields.path_two.size(); iter++)
+        for (int i = 0; i < mazeFields.path_two.size(); i++)
         {
-            if (iter == 0)
-                mazeFields.maze.at(mazeFields.path_two[iter]) = "$";
-            else if (iter == mazeFields.path_two.size() - 1)
-                mazeFields.maze.at(mazeFields.path_two[iter]) = "@";
+            if (i == 0)
+                mazeFields.maze.at(mazeFields.path_two[i]) = "$";
+            else if (i == mazeFields.path_two.size() - 1)
+                mazeFields.maze.at(mazeFields.path_two[i]) = "@";
             else
-                mazeFields.maze.at(mazeFields.path_two[iter]) = " ";
+                mazeFields.maze.at(mazeFields.path_two[i]) = " ";
         }
     };
 
     if (activePath == 2)
     {
-        for (int iter = 0; iter < mazeFields.path_three.size(); iter++)
+        for (int i = 0; i < mazeFields.path_three.size(); i++)
         {
-            if (iter == 0)
-                mazeFields.maze.at(mazeFields.path_three[iter]) = "$";
-            else if (iter == mazeFields.path_three.size() - 1)
-                mazeFields.maze.at(mazeFields.path_three[iter]) = "@";
+            if (i == 0)
+                mazeFields.maze.at(mazeFields.path_three[i]) = "$";
+            else if (i == mazeFields.path_three.size() - 1)
+                mazeFields.maze.at(mazeFields.path_three[i]) = "@";
             else
-                mazeFields.maze.at(mazeFields.path_three[iter]) = " ";
+                mazeFields.maze.at(mazeFields.path_three[i]) = " ";
         }
     };
 }
@@ -733,9 +736,9 @@ void game()
         {
             cout << "  _____ _            __   __               " << endl;
             cout << " |_   _| |__   ___  |  \\ /  |  __ _ _______  " << endl;
-            cout << "   | | | '_ \\ / _ \\ | |\\ /| | / _` |_  / _ \\ " << endl;
-            cout << "   | | | | | |  __/ | |   | |  (_| |/ /  __/ " << endl;
-            cout << "   |_| |_| |_|\\___| |_|   |_| \\__,_/___\\___| " << endl;
+            cout << "   | | | '_ \\ / _ \\ | |\\ /| |/ _` |_  / _ \\ " << endl;
+            cout << "   | | | | | |  __/ | |   | | (_| |/ /  __/ " << endl;
+            cout << "   |_| |_| |_|\\___| |_|   |_|\\__,_/___\\___| " << endl;
             cout << endl
                  << endl
                  << "Welcome to The Maze!" << endl
@@ -753,8 +756,8 @@ void game()
         cin >> input;
         if (input == "y" || input == "Y")
         {
-            sleep(2);
             mazeBuilder();
+            sleep(1);
             mazeFields.maze.at(activeCell) = " ";
             while (mazeFields.maze.at(activeCell) != "@")
             {
