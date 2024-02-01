@@ -9,7 +9,6 @@
 #include <iomanip>
 #include <ios>
 #include <conio.h>
-#include <future>
 using namespace std;
 
 struct mazeData
@@ -735,7 +734,7 @@ void game()
         if (firstPlay == true)
         {
             cout << "  _____ _            __   __               " << endl;
-            cout << " |_   _| |__   ___  |  \\ /  |  __ _ _______  " << endl;
+            cout << " |_   _| |__   ___  |  \\ /  | __ _ _______  " << endl;
             cout << "   | | | '_ \\ / _ \\ | |\\ /| |/ _` |_  / _ \\ " << endl;
             cout << "   | | | | | |  __/ | |   | | (_| |/ /  __/ " << endl;
             cout << "   |_| |_| |_|\\___| |_|   |_|\\__,_/___\\___| " << endl;
